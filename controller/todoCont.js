@@ -1,5 +1,9 @@
 const Todo = require('../model/todoModel');
 
+function toUTC(dateString) {
+    return new Date(dateString);
+}
+
 // GET TODOS
 exports.getTodos = async (req, res) => {
     try {
@@ -24,7 +28,7 @@ exports.postTodo = async (req, res) => {
             return res.status(401).json({ success: false, message: "No user id provided" });
         if (!task || !description || !deadline)
             return res.status(401).json({ success: false, message: "All fields are required" });
-        const todo = new Todo({ task, description, deadline, createdBy });
+        const todo = new Todo({ task, description, deadline: toUTC(deadline), createdBy });
         const result = await todo.save();
         res.status(201).json({ success: true, message: "Todo added successfully", result });
     } catch (error) {
@@ -42,7 +46,7 @@ exports.updateTodo = async (req, res) => {
         const { task, description, deadline, status } = req.body;
         if (!task || !description || !deadline)
             return res.status(401).json({ success: false, message: "All fields are required" });
-        const todo = await Todo.findByIdAndUpdate(_id, { task, description, deadline, status }, { new: true });
+        const todo = await Todo.findByIdAndUpdate(_id, { task, description, deadline: toUTC(deadline), status }, { new: true });
         if (!todo)
             return res.status(401).json({ success: false, message: "Todo not found" });
         res.status(201).json({ success: true, message: "Todo updated successfully", todo });
