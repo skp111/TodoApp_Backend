@@ -145,7 +145,7 @@ exports.sendSecurityCode = [
             }
             // generate a 8-char alphanumeric code (cleaning base64 symbols)
             user.securityCode = crypto.randomBytes(9).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
-            user.securityCodeExpiration = Date.now() + 3600000; // 1 hour
+            user.securityCodeExpiration = Date.now() + 300000; // 5 minutes from now
             await user.save();
             const html = `
                 <h3>Password Reset Request</h3>
