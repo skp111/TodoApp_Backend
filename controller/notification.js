@@ -4,13 +4,16 @@ const sendEmail = require("./sendEmail");
 
 // Runs every minute
 cron.schedule("* * * * *", async () => {  // Runs every minute
-  const now = new Date().toISOString().slice(0, 16);  // Get current time in 'YYYY-MM-DDTHH:MM' format
+  const now = new Date();  // Current time
+  console.log("Running scheduled task to check for due todos at", now);
 
   const dueTodos = await Todo.find({ // Find todos that are due and not completed (conatisn details of todo as well as user details in createdBy field)
-    deadline: { $lte: now }, // Deadline is less than or equal to current time (string vs string comparison works for ISO format)
+    deadline: { $lte: now }, // Deadline is less than or equal to current time
     status: false,
     emailSent: false
   }).populate("createdBy");
+
+  console.log(`Found ${dueTodos.length} due todos`);
 
   for (let todo of dueTodos) {
     await sendEmail({
